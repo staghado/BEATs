@@ -1,26 +1,28 @@
 import librosa
 import torch
-import torchaudio
+#import torchaudio
 import pandas as pd
 import os
 
 from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
+import torch.nn.functional as F
 
-#from torchaudio.transforms import Resample
 from sklearn.preprocessing import LabelEncoder
 
 from pytorch_lightning import LightningDataModule
 
 
 class AudioDataset(Dataset):
-    def __init__(self, root_dir, data_frame, transform=None):
+    def __init__(self, root_dir, data_frame, target_sample_rate, max_time, transform=None):
         self.root_dir = root_dir
         self.transform = transform
         self.data_frame = data_frame
 
         self.label_encoder = LabelEncoder()
         self.label_encoder.fit(self.data_frame["category"])
+        self.target_sample_rate = target_sample_rate
+        self.num_samples = target_sample_rate * max_time
 
     def __len__(self):
         return len(self.data_frame)
@@ -30,16 +32,36 @@ class AudioDataset(Dataset):
         label = self.data_frame.iloc[idx]["category"]
 
         # Load audio data and perform any desired transformations
-        sig, sr = librosa.load(audio_path, sr=16000, mono=True)
-        sig_t = torch.tensor(sig)
-        padding_mask = torch.zeros(1, sig_t.shape[0]).bool().squeeze(0)
+        audio, _ = librosa.load(audio_path, sr=self.target_sample_rate, mono=True)
+        audio = torch.tensor(audio)
+        padding_mask = torch.zeros(1, audio.shape[0]).bool().squeeze(0)
         if self.transform:
-            sig_t = self.transform(sig_t)
+            audio = self.transform(audio)
+        
+        audio = self.to_mono(audio)
+        
+        if audio.shape[0] > self.num_samples:
+            audio = self.crop_audio(audio)
+            
+        if audio.shape[0] < self.num_samples:
+            audio = self.pad_audio(audio)
 
         # Encode label as integer
         label = self.label_encoder.transform([label])[0]
 
-        return sig_t, padding_mask, label
+        return audio, padding_mask, label
+    
+    def pad_audio(self, audio):
+        pad_length = self.num_samples - audio.shape[0]
+        last_dim_padding = (0, pad_length)
+        audio = F.pad(audio, last_dim_padding)
+        return audio
+        
+    def crop_audio(self, audio):
+        return audio[:self.num_samples]
+        
+    def to_mono(self, audio):
+        return torch.mean(audio, axis=0)
 
 
 class ECS50DataModule(LightningDataModule):
@@ -132,7 +154,6 @@ class BirdDataModule(LightningDataModule):
         )
 
         return DataLoader(val_df, batch_size=self.batch_size, shuffle=False)
-
 
 # class BirdCLEFDataset(Dataset):
 #     def __init__(self, df, target_sample_rate, max_time, image_transforms=None):
