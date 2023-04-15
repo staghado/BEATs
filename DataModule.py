@@ -22,7 +22,9 @@ class AudioDataset(Dataset):
         self.label_encoder = LabelEncoder()
         self.label_encoder.fit(self.data_frame["category"])
         self.target_sample_rate = target_sample_rate
-        self.num_samples = target_sample_rate * max_time
+        num_samples = target_sample_rate * max_time
+        self.num_samples = num_samples
+
 
     def __len__(self):
         return len(self.data_frame)
