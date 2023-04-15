@@ -31,7 +31,7 @@ class AudioDataset(Dataset):
         label = self.data_frame.iloc[idx]["category"]
 
         # Load audio data and perform any desired transformations
-        audio, _ = librosa.load(audio_path, sr=self.target_sample_rate, mono=True)
+        audio, _ = librosa.load(audio_path, sr=32000, mono=True)
         audio = torch.tensor(audio)
         padding_mask = torch.zeros(1, audio.shape[0]).bool().squeeze(0)
         if self.transform:
@@ -125,7 +125,7 @@ class BirdDataModule(LightningDataModule):
         self.data_frame = data_frame
         self.batch_size = batch_size
         self.split_ratio = split_ratio
-        self.num_samples=num_samples,
+        self.num_samples = num_samples,
         self.transform = transform
 
         self.setup()
