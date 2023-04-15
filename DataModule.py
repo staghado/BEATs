@@ -37,7 +37,7 @@ class AudioDataset(Dataset):
         if self.transform:
             audio = self.transform(audio)
         
-        audio = self.to_mono(audio)
+        #audio = self.to_mono(audio)
         
         if audio.shape[0] > self.num_samples:
             audio = self.crop_audio(audio)
@@ -61,52 +61,6 @@ class AudioDataset(Dataset):
         
     def to_mono(self, audio):
         return torch.mean(audio, axis=0)
-
-
-class ECS50DataModule(LightningDataModule):
-    def __init__(
-        self,
-        root_dir: str = "/home/said/projects/BirdCLEF/Fine-tune-BEATs/ESC-50-master/audio/",
-        csv_file: str = "/home/said/projects/BirdCLEF/Fine-tune-BEATs/ESC-50-master/meta/esc50.csv",
-        batch_size: int = 8,
-        split_ratio=0.8,
-        transform=None,
-        **kwargs
-    ):
-        super().__init__(**kwargs)
-        self.root_dir = root_dir
-        self.csv_file = csv_file
-        self.batch_size = batch_size
-        self.split_ratio = split_ratio
-        self.transform = transform
-
-        self.setup()
-
-    def prepare_data(self):
-        pass
-
-    def setup(self, stage=None):
-        data_frame = pd.read_csv(self.csv_file)
-        data_frame = data_frame.sample(frac=1).reset_index(
-            drop=True
-        )  # shuffle the data frame
-        split_index = int(len(data_frame) * self.split_ratio)
-        self.train_set = data_frame.iloc[:split_index, :]
-        self.val_set = data_frame.iloc[split_index:, :]
-
-    def train_dataloader(self):
-        train_df = AudioDataset(
-            root_dir=self.root_dir, data_frame=self.train_set, transform=self.transform
-        )
-
-        return DataLoader(train_df, batch_size=self.batch_size, shuffle=True)
-
-    def val_dataloader(self):
-        val_df = AudioDataset(
-            root_dir=self.root_dir, data_frame=self.val_set, transform=self.transform
-        )
-
-        return DataLoader(val_df, batch_size=self.batch_size, shuffle=False)
 
 # BIRDCLEF 2023 DATASET
 class BirdDataModule(LightningDataModule):
@@ -152,6 +106,51 @@ class BirdDataModule(LightningDataModule):
     def val_dataloader(self):
         val_df = AudioDataset(
             root_dir=self.root_dir, data_frame=self.val_set, num_samples=self.num_samples, transform=self.transform
+        )
+
+        return DataLoader(val_df, batch_size=self.batch_size, shuffle=False)
+
+class ECS50DataModule(LightningDataModule):
+    def __init__(
+        self,
+        root_dir: str = "/home/said/projects/BirdCLEF/Fine-tune-BEATs/ESC-50-master/audio/",
+        csv_file: str = "/home/said/projects/BirdCLEF/Fine-tune-BEATs/ESC-50-master/meta/esc50.csv",
+        batch_size: int = 8,
+        split_ratio=0.8,
+        transform=None,
+        **kwargs
+    ):
+        super().__init__(**kwargs)
+        self.root_dir = root_dir
+        self.csv_file = csv_file
+        self.batch_size = batch_size
+        self.split_ratio = split_ratio
+        self.transform = transform
+
+        self.setup()
+
+    def prepare_data(self):
+        pass
+
+    def setup(self, stage=None):
+        data_frame = pd.read_csv(self.csv_file)
+        data_frame = data_frame.sample(frac=1).reset_index(
+            drop=True
+        )  # shuffle the data frame
+        split_index = int(len(data_frame) * self.split_ratio)
+        self.train_set = data_frame.iloc[:split_index, :]
+        self.val_set = data_frame.iloc[split_index:, :]
+
+    def train_dataloader(self):
+        train_df = AudioDataset(
+            root_dir=self.root_dir, data_frame=self.train_set, transform=self.transform
+        )
+
+        return DataLoader(train_df, batch_size=self.batch_size, shuffle=True)
+
+    def val_dataloader(self):
+        val_df = AudioDataset(
+            root_dir=self.root_dir, data_frame=self.val_set, transform=self.transform
         )
 
         return DataLoader(val_df, batch_size=self.batch_size, shuffle=False)
