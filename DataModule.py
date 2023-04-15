@@ -117,6 +117,8 @@ class BirdDataModule(LightningDataModule):
         data_frame = None,
         batch_size: int = 8,
         split_ratio=0.8,
+        target_sample_rate=32000,
+        max_time=5,
         transform=None,
         **kwargs
     ):
@@ -125,6 +127,8 @@ class BirdDataModule(LightningDataModule):
         self.data_frame = data_frame
         self.batch_size = batch_size
         self.split_ratio = split_ratio
+        self.target_sample_rate=target_sample_rate,
+        self.max_time=max_time,
         self.transform = transform
 
         self.setup()
@@ -143,14 +147,14 @@ class BirdDataModule(LightningDataModule):
 
     def train_dataloader(self):
         train_df = AudioDataset(
-            root_dir=self.root_dir, data_frame=self.train_set, transform=self.transform
+            root_dir=self.root_dir, data_frame=self.train_set, target_sample_rate=self.target_sample_rate, max_time=self.max_time, transform=self.transform
         )
 
         return DataLoader(train_df, batch_size=self.batch_size, shuffle=True)
 
     def val_dataloader(self):
         val_df = AudioDataset(
-            root_dir=self.root_dir, data_frame=self.val_set, transform=self.transform
+            root_dir=self.root_dir, data_frame=self.val_set, target_sample_rate=self.target_sample_rate, max_time=self.max_time, transform=self.transform
         )
 
         return DataLoader(val_df, batch_size=self.batch_size, shuffle=False)
