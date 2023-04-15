@@ -38,7 +38,7 @@ class AudioDataset(Dataset):
             audio = self.transform(audio)
         
         #audio = self.to_mono(audio)
-        
+        print(audio.shape)
         if audio.shape[0] > self.num_samples:
             audio = self.crop_audio(audio)
             
