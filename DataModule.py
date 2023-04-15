@@ -92,7 +92,7 @@ class BirdDataModule(LightningDataModule):
     def __init__(
         self,
         root_dir: str = "/home/said/projects/BirdCLEF/Fine-tune-BEATs/BIRDCLEF-DATASET/",
-        csv_file: str = "/home/said/projects/BirdCLEF/Fine-tune-BEATs/BIRDCLEF-DATASET/train_metadata.csv",
+        data_frame = None,
         batch_size: int = 8,
         split_ratio=0.8,
         transform=None,
@@ -100,7 +100,7 @@ class BirdDataModule(LightningDataModule):
     ):
         super().__init__(**kwargs)
         self.root_dir = root_dir
-        self.csv_file = csv_file
+        self.data_frame = data_frame
         self.batch_size = batch_size
         self.split_ratio = split_ratio
         self.transform = transform
@@ -110,8 +110,8 @@ class BirdDataModule(LightningDataModule):
     def prepare_data(self):
         pass
 
-    def setup(self, stage=None):
-        data_frame = pd.read_csv(self.csv_file)
+    def setup(self):
+        data_frame = self.data_frame
         data_frame = data_frame.sample(frac=1).reset_index(
             drop=True
         )  # shuffle the data frame
