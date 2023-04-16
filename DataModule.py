@@ -19,10 +19,14 @@ class AudioDataset(Dataset):
         self.root_dir = root_dir
         self.transform = transform
         self.data_frame = data_frame
-
+        if isinstance(num_samples, tuple):
+            print("converting num_samples to int")
+            num_samples = num_samples[0]
+        print(type(self.num_samples))
+        self.num_samples = num_samples
+        
         self.label_encoder = LabelEncoder()
         self.label_encoder.fit(self.data_frame["category"])
-        self.num_samples = num_samples
 
     def __len__(self):
         return len(self.data_frame)
