@@ -1,6 +1,5 @@
 import librosa
 import torch
-#import torchaudio
 import pandas as pd
 import os
 
@@ -20,7 +19,6 @@ class AudioDataset(Dataset):
         self.transform = transform
         self.data_frame = data_frame
         if isinstance(num_samples, tuple):
-            print("converting num_samples to int")
             num_samples = num_samples[0]
         self.num_samples = num_samples
         
@@ -66,7 +64,7 @@ class AudioDataset(Dataset):
 class BirdDataModule(LightningDataModule):
     def __init__(
         self,
-        root_dir: str = "/home/said/projects/BirdCLEF/Fine-tune-BEATs/BIRDCLEF-DATASET/",
+        root_dir: str = "/BIRDCLEF-DATASET/",
         data_frame = None,
         batch_size: int = 8,
         split_ratio=0.8,
@@ -113,8 +111,8 @@ class BirdDataModule(LightningDataModule):
 class ECS50DataModule(LightningDataModule):
     def __init__(
         self,
-        root_dir: str = "/home/said/projects/BirdCLEF/Fine-tune-BEATs/ESC-50-master/audio/",
-        csv_file: str = "/home/said/projects/BirdCLEF/Fine-tune-BEATs/ESC-50-master/meta/esc50.csv",
+        root_dir: str = "/ESC-50-master/audio/",
+        csv_file: str = "/ESC-50-master/meta/esc50.csv",
         batch_size: int = 8,
         split_ratio=0.8,
         transform=None,

@@ -20,7 +20,7 @@ class BEATsTransferLearningModel(pl.LightningModule):
         lr: float = 1e-3,
         lr_scheduler_gamma: float = 1e-1,
         num_workers: int = 6,
-        model_path: str = "/home/said/projects/BirdCLEF/Fine-tune-BEATs/checkpoints/BEATs_iter3_plus_AS2M.pt",
+        model_path: str = "/checkpoints/BEATs_iter3_plus_AS2M.pt",
         **kwargs,
     ) -> None:
         """TransferLearningModel.
