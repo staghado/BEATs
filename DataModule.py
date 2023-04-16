@@ -15,6 +15,7 @@ from pytorch_lightning import LightningDataModule
 
 class AudioDataset(Dataset):
     def __init__(self, root_dir, data_frame, num_samples, transform=None):
+        super(AudioDataset).__init__()
         self.root_dir = root_dir
         self.transform = transform
         self.data_frame = data_frame
