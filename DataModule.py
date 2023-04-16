@@ -37,20 +37,18 @@ class AudioDataset(Dataset):
         # Load audio data and perform any desired transformations
         audio, _ = librosa.load(audio_path, sr=32000, mono=True)
         audio = torch.tensor(audio)
-        padding_mask = torch.zeros(1, audio.shape[0]).bool().squeeze(0)
+        
         if self.transform:
             audio = self.transform(audio)
         
-        print(f"{audio.shape[0]} > {self.num_samples}")
         print(f"audio.shape: {audio.shape}")
         if audio.shape[0] > self.num_samples:
             audio = self.crop_audio(audio)
-            print('cropped')
             
         if audio.shape[0] < self.num_samples:
             audio = self.pad_audio(audio)
-            print('padded')
-        print(f"audio.shape after crop/pad: {audio.shape}")
+        # Create padding mask
+        padding_mask = torch.zeros(1, audio.shape[0]).bool().squeeze(0)
         # Encode label as integer
         label = self.label_encoder.transform([label])[0]
 
