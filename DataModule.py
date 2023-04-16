@@ -23,7 +23,6 @@ class AudioDataset(Dataset):
             print("converting num_samples to int")
             num_samples = num_samples[0]
         self.num_samples = num_samples
-        print(type(self.num_samples))
         
         self.label_encoder = LabelEncoder()
         self.label_encoder.fit(self.data_frame["category"])
@@ -42,14 +41,14 @@ class AudioDataset(Dataset):
         if self.transform:
             audio = self.transform(audio)
         
-        #audio = self.to_mono(audio)
         print(f"{audio.shape[0]} > {self.num_samples}")
+        print(f"audio.shape: {audio.shape}")
         if audio.shape[0] > self.num_samples:
             audio = self.crop_audio(audio)
             
         if audio.shape[0] < self.num_samples:
             audio = self.pad_audio(audio)
-
+        print(f"audio.shape after crop/pad: {audio.shape}")
         # Encode label as integer
         label = self.label_encoder.transform([label])[0]
 
@@ -63,9 +62,6 @@ class AudioDataset(Dataset):
         
     def crop_audio(self, audio):
         return audio[:self.num_samples]
-        
-    def to_mono(self, audio):
-        return torch.mean(audio, axis=0)
 
 # BIRDCLEF 2023 DATASET
 class BirdDataModule(LightningDataModule):
