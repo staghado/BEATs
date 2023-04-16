@@ -56,7 +56,7 @@ class AudioDataset(Dataset):
     
     def pad_audio(self, audio):
         pad_length = self.num_samples - audio.shape[0]
-        last_dim_padding = (0, pad_length)
+        last_dim_padding = (pad_length)
         audio = F.pad(audio, last_dim_padding)
         return audio
         
