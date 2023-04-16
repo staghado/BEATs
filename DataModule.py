@@ -22,8 +22,8 @@ class AudioDataset(Dataset):
         if isinstance(num_samples, tuple):
             print("converting num_samples to int")
             num_samples = num_samples[0]
-        print(type(self.num_samples))
         self.num_samples = num_samples
+        print(type(self.num_samples))
         
         self.label_encoder = LabelEncoder()
         self.label_encoder.fit(self.data_frame["category"])
