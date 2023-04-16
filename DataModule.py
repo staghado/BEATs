@@ -45,9 +45,11 @@ class AudioDataset(Dataset):
         print(f"audio.shape: {audio.shape}")
         if audio.shape[0] > self.num_samples:
             audio = self.crop_audio(audio)
+            print('cropped')
             
         if audio.shape[0] < self.num_samples:
             audio = self.pad_audio(audio)
+            print('padded')
         print(f"audio.shape after crop/pad: {audio.shape}")
         # Encode label as integer
         label = self.label_encoder.transform([label])[0]
