@@ -41,7 +41,6 @@ class AudioDataset(Dataset):
         if self.transform:
             audio = self.transform(audio)
         
-        print(f"audio.shape: {audio.shape}")
         if audio.shape[0] > self.num_samples:
             audio = self.crop_audio(audio)
             
@@ -56,7 +55,7 @@ class AudioDataset(Dataset):
     
     def pad_audio(self, audio):
         pad_length = self.num_samples - audio.shape[0]
-        last_dim_padding = (pad_length)
+        last_dim_padding = (0, pad_length)
         audio = F.pad(audio, last_dim_padding)
         return audio
         
