@@ -45,9 +45,8 @@ class AudioDataset(Dataset):
         # Create padding mask
         padding_mask = torch.zeros(1, audio.shape[0]).bool().squeeze(0)
         # Encode label as integer
-        print(label)
-        print(self.label_encoder.transform([label]))
-        label = self.label_encoder.transform([label])[0]
+        if self.label_encoder is not None:
+            label = self.label_encoder.transform([label])[0]
 
         return audio, padding_mask, label
     
