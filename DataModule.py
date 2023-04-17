@@ -13,7 +13,7 @@ from pytorch_lightning import LightningDataModule
 
 
 class AudioDataset(Dataset):
-    def __init__(self, root_dir, data_frame, num_samples, transform=None):
+    def __init__(self, root_dir, data_frame, num_samples, transform=None, label_encoder=None):
         super(AudioDataset).__init__()
         self.root_dir = root_dir
         self.transform = transform
@@ -21,9 +21,7 @@ class AudioDataset(Dataset):
         if isinstance(num_samples, tuple):
             num_samples = num_samples[0]
         self.num_samples = num_samples
-        
-        self.label_encoder = LabelEncoder()
-        self.label_encoder.fit(self.data_frame["category"])
+        self.label_encoder = label_encoder
 
     def __len__(self):
         return len(self.data_frame)
@@ -70,6 +68,7 @@ class BirdDataModule(LightningDataModule):
         split_ratio=0.8,
         num_samples=32000 * 5,
         transform=None,
+        label_encoder=None,
         **kwargs
     ):
         super().__init__(**kwargs)
@@ -79,6 +78,7 @@ class BirdDataModule(LightningDataModule):
         self.split_ratio = split_ratio
         self.num_samples = num_samples,
         self.transform = transform
+        self.label_encoder = label_encoder
 
         self.setup()
 
@@ -96,14 +96,14 @@ class BirdDataModule(LightningDataModule):
 
     def train_dataloader(self):
         train_df = AudioDataset(
-            root_dir=self.root_dir, data_frame=self.train_set, num_samples=self.num_samples, transform=self.transform
+            root_dir=self.root_dir, data_frame=self.train_set, num_samples=self.num_samples, transform=self.transform, label_encoder=self.label_encoder
         )
 
         return DataLoader(train_df, batch_size=self.batch_size, shuffle=True)
 
     def val_dataloader(self):
         val_df = AudioDataset(
-            root_dir=self.root_dir, data_frame=self.val_set, num_samples=self.num_samples, transform=self.transform
+            root_dir=self.root_dir, data_frame=self.val_set, num_samples=self.num_samples, transform=self.transform, label_encoder=self.label_encoder
         )
 
         return DataLoader(val_df, batch_size=self.batch_size, shuffle=False)
