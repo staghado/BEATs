@@ -22,6 +22,8 @@ class AudioDataset(Dataset):
             num_samples = num_samples[0]
         self.num_samples = num_samples
         self.label_encoder = label_encoder
+        
+        print(self.label_encoder)
 
     def __len__(self):
         return len(self.data_frame)
@@ -45,6 +47,8 @@ class AudioDataset(Dataset):
         # Create padding mask
         padding_mask = torch.zeros(1, audio.shape[0]).bool().squeeze(0)
         # Encode label as integer
+
+        print(self.label_encoder.transform([label]))
         label = self.label_encoder.transform([label])[0]
 
         return audio, padding_mask, label
