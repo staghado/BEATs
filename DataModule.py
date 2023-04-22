@@ -69,6 +69,7 @@ class BirdDataModule(LightningDataModule):
     ):
         super().__init__(**kwargs)
         self.root_dir = root_dir
+        self.csv_file = csv_file
         self.batch_size = batch_size
         self.split_ratio = split_ratio
         self.num_samples = num_samples,
