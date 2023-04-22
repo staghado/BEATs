@@ -7,13 +7,12 @@ from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
 import torch.nn.functional as F
 
-from sklearn.preprocessing import LabelEncoder
 
 from pytorch_lightning import LightningDataModule
 
 
 class AudioDataset(Dataset):
-    def __init__(self, root_dir, data_frame, num_samples, transform=None, label_encoder=None):
+    def __init__(self, root_dir, data_frame, num_samples, transform=None):
         super(AudioDataset).__init__()
         self.root_dir = root_dir
         self.transform = transform
@@ -21,7 +20,6 @@ class AudioDataset(Dataset):
         if isinstance(num_samples, tuple):
             num_samples = num_samples[0]
         self.num_samples = num_samples
-        self.label_encoder = label_encoder
 
     def __len__(self):
         return len(self.data_frame)
@@ -42,11 +40,9 @@ class AudioDataset(Dataset):
             
         if audio.shape[0] < self.num_samples:
             audio = self.pad_audio(audio)
+
         # Create padding mask
         padding_mask = torch.zeros(1, audio.shape[0]).bool().squeeze(0)
-        # Encode label as integer
-        if self.label_encoder is not None:
-            label = self.label_encoder.transform([label])[0]
 
         return audio, padding_mask, label
     
@@ -63,23 +59,20 @@ class AudioDataset(Dataset):
 class BirdDataModule(LightningDataModule):
     def __init__(
         self,
-        root_dir: str = "/BIRDCLEF-DATASET/",
-        data_frame = None,
+        root_dir: str = "/kaggle/input/birdclef-split-train-audio/",
+        dsv_file: str = "/kaggle/input/birdclef-2023/train_metadata.csv",
         batch_size: int = 8,
         split_ratio=0.8,
         num_samples=32000 * 5,
         transform=None,
-        label_encoder=None,
         **kwargs
     ):
         super().__init__(**kwargs)
         self.root_dir = root_dir
-        self.data_frame = data_frame
         self.batch_size = batch_size
         self.split_ratio = split_ratio
         self.num_samples = num_samples,
         self.transform = transform
-        self.label_encoder = label_encoder
 
         self.setup()
 
@@ -87,24 +80,24 @@ class BirdDataModule(LightningDataModule):
         pass
 
     def setup(self):
-        data_frame = self.data_frame
-        data_frame = data_frame.sample(frac=1).reset_index(
-            drop=True
-        )  # shuffle the data frame
+        data_frame = pd.read_csv(self.csv_file)
+        # data_frame = data_frame.sample(frac=1).reset_index(
+        #     drop=True
+        # )  # shuffle the data frame
         split_index = int(len(data_frame) * self.split_ratio)
         self.train_set = data_frame.iloc[:split_index, :]
         self.val_set = data_frame.iloc[split_index:, :]
 
     def train_dataloader(self):
         train_df = AudioDataset(
-            root_dir=self.root_dir, data_frame=self.train_set, num_samples=self.num_samples, transform=self.transform, label_encoder=self.label_encoder
+            root_dir=self.root_dir, data_frame=self.train_set, num_samples=self.num_samples, transform=self.transform
         )
 
         return DataLoader(train_df, batch_size=self.batch_size, shuffle=True)
 
     def val_dataloader(self):
         val_df = AudioDataset(
-            root_dir=self.root_dir, data_frame=self.val_set, num_samples=self.num_samples, transform=self.transform, label_encoder=self.label_encoder
+            root_dir=self.root_dir, data_frame=self.val_set, num_samples=self.num_samples, transform=self.transform
         )
 
         return DataLoader(val_df, batch_size=self.batch_size, shuffle=False)
