@@ -73,4 +73,4 @@ data:
   transform: null
 finetuning:
   milestones: 0
-ckpt_path: /kaggle/working/beats-mine/chkpt.pth
+ckpt_path: null
