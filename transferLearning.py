@@ -1,13 +1,11 @@
 import numpy as np
-
+import pytorch_lightning as pl
 import torch
 from torch import nn, optim
 from torch.nn import functional as F
 from torch.optim.lr_scheduler import MultiStepLR
 from torch.optim.optimizer import Optimizer
 from torchmetrics import Accuracy
-
-import pytorch_lightning as pl
 
 from BEATs.BEATs import BEATs, BEATsConfig
 
