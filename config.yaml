@@ -58,6 +58,10 @@ trainer:
     init_args:
       patience: 7
       monitor: "val_loss"
+  - class_path: pytorch_lightning.callbacks.ModelCheckpoint
+    init_args:
+      dirpath: /kaggle/working/beats-mine/
+      monitor: "val_loss"
 model:
   num_target_classes: 264
   lr: 0.0001

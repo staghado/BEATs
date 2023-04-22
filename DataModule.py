@@ -81,7 +81,7 @@ class BirdDataModule(LightningDataModule):
         pass
 
     def setup(self, stage=None):
-        data_frame = pd.read_csv(self.csv_file).sample(frac=0.1).reset_index(drop=True)
+        data_frame = pd.read_csv(self.csv_file).sample(frac=0.01).reset_index(drop=True)
         # data_frame = data_frame.sample(frac=1).reset_index(
         #     drop=True
         # )  # shuffle the data frame
