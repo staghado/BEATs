@@ -40,7 +40,7 @@ class AudioDataset(Dataset):
             
         if audio.shape[0] < self.num_samples:
             audio = self.pad_audio(audio)
-
+            
         # Create padding mask
         padding_mask = torch.zeros(1, audio.shape[0]).bool().squeeze(0)
 
@@ -60,7 +60,7 @@ class BirdDataModule(LightningDataModule):
     def __init__(
         self,
         root_dir: str = "/kaggle/input/birdclef-split-train-audio/",
-        dsv_file: str = "/kaggle/input/birdclef-2023/train_metadata.csv",
+        csv_file: str = "/kaggle/working/beats-mine/train_metadata.csv",
         batch_size: int = 8,
         split_ratio=0.8,
         num_samples=32000 * 5,
