@@ -58,6 +58,7 @@ trainer:
     init_args:
       patience: 7
       monitor: "val_loss"
+  - 
 model:
   num_target_classes: 264
   lr: 0.0001
@@ -73,4 +74,4 @@ data:
   transform: null
 finetuning:
   milestones: 0
-ckpt_path: /kaggle/working/beats-mine/
+ckpt_path: /kaggle/working/beats-mine/chkpt.pth
