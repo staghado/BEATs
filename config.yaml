@@ -58,7 +58,6 @@ trainer:
     init_args:
       patience: 7
       monitor: "val_loss"
-  - 
 model:
   num_target_classes: 264
   lr: 0.0001
