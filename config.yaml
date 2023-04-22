@@ -65,7 +65,7 @@ model:
   model_path: /kaggle/input/pre-trained-beats/BEATs_iter3_plus_AS2M.pt
 data:
   root_dir: /kaggle/input/birdclef-split-train-audio/
-  csv_file: /kaggle/input/birdclef-2023/train_metadata.csv
+  csv_file: /kaggle/working/beats-mine/train_metadata.csv
   batch_size: 32
   split_ratio: 0.8
   num_samples: 160000
