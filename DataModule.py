@@ -1,14 +1,11 @@
-import librosa
-import torch
-import pandas as pd
 import os
 
-from torch.utils.data import DataLoader
-from torch.utils.data import Dataset
+import librosa
+import pandas as pd
+import torch
 import torch.nn.functional as F
-
-
 from pytorch_lightning import LightningDataModule
+from torch.utils.data import DataLoader, Dataset
 
 
 class AudioDataset(Dataset):
@@ -25,37 +22,40 @@ class AudioDataset(Dataset):
         return len(self.data_frame)
 
     def __getitem__(self, idx):
-        audio_path = os.path.join(self.root_dir, self.data_frame.iloc[idx]["filename"])
+        audio_path = os.path.join(
+            self.root_dir, self.data_frame.iloc[idx]["filename"])
         label = self.data_frame.iloc[idx]["category"]
 
         # Load audio data and perform any desired transformations
         audio, _ = librosa.load(audio_path, sr=32000, mono=True)
         audio = torch.tensor(audio)
-        
+
         if self.transform:
             audio = self.transform(audio)
-        
+
         if audio.shape[0] > self.num_samples:
             audio = self.crop_audio(audio)
-            
+
         if audio.shape[0] < self.num_samples:
             audio = self.pad_audio(audio)
-            
+
         # Create padding mask
         padding_mask = torch.zeros(1, audio.shape[0]).bool().squeeze(0)
 
         return audio, padding_mask, label
-    
+
     def pad_audio(self, audio):
         pad_length = self.num_samples - audio.shape[0]
         last_dim_padding = (0, pad_length)
         audio = F.pad(audio, last_dim_padding)
         return audio
-        
+
     def crop_audio(self, audio):
         return audio[:self.num_samples]
 
 # BIRDCLEF 2023 DATASET
+
+
 class BirdDataModule(LightningDataModule):
     def __init__(
         self,
@@ -103,6 +103,7 @@ class BirdDataModule(LightningDataModule):
 
         return DataLoader(val_df, batch_size=self.batch_size, shuffle=False)
 
+
 class ECS50DataModule(LightningDataModule):
     def __init__(
         self,
@@ -125,7 +126,7 @@ class ECS50DataModule(LightningDataModule):
     def prepare_data(self):
         pass
 
-    def setup(self, stage=None):
+    def setup(self):
         data_frame = pd.read_csv(self.csv_file)
         data_frame = data_frame.sample(frac=1).reset_index(
             drop=True
