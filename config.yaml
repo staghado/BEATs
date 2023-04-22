@@ -60,7 +60,7 @@ trainer:
       monitor: "val_loss"
   - class_path: pytorch_lightning.callbacks.ModelCheckpoint
     init_args:
-      dirpath: /kaggle/working/beats-mine/
+      dirpath: /kaggle/working/checkpoints/
       monitor: "val_loss"
 model:
   num_target_classes: 264
