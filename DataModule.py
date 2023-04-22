@@ -80,7 +80,7 @@ class BirdDataModule(LightningDataModule):
     def prepare_data(self):
         pass
 
-    def setup(self):
+    def setup(self, stage=None):
         data_frame = pd.read_csv(self.csv_file)
         # data_frame = data_frame.sample(frac=1).reset_index(
         #     drop=True
