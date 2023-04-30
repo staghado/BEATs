@@ -56,7 +56,7 @@ trainer:
   callbacks:
   - class_path: pytorch_lightning.callbacks.EarlyStopping
     init_args:
-      patience: 2
+      patience: 5
       monitor: "val_loss"
   - class_path: pytorch_lightning.callbacks.ModelCheckpoint
     init_args:
